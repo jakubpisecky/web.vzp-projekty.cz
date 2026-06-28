@@ -51,7 +51,7 @@ ob_start();
     <div class="container">
         <div class="row text-center">
             <div class="col">
-                <span class="top-sub-title text-color-primary">KONTAKTUJTE NÁS Kubo</span>
+                <span class="top-sub-title text-color-primary">KONTAKTUJTE NÁS</span>
                 <h2 class="font-weight-bold mb-2">Máte dotaz nebo poptávku?</h2>
                 <p class="lead mb-0">
                     Napište nám pomocí formuláře nebo využijte kontaktní údaje níže.
