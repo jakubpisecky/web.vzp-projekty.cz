@@ -1,0 +1,24 @@
+# Pretty URLs pro router v index.php (root)
+RewriteEngine On
+
+RewriteRule ^uploads/(.*)$ https://cms.vzp-projekty.cz/uploads/$1 [R=302,L]
+
+# /index.php -> /
+RewriteCond %{THE_REQUEST} \s/+index\.php[\s?]
+RewriteRule ^index\.php$ / [R=301,L]
+
+# existující soubory/složky obsluž přímo
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# schovej systémové složky (když by někdo trefil URL)
+RewriteRule ^(includes|templates)/ - [R=404,L]
+
+# odstraň trailing slash (kromě rootu a reálných složek)
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} .+/$
+RewriteRule ^(.+?)/$ /$1 [R=301,L]
+
+# vše ostatní řeší index.php (router)
+RewriteRule ^ index.php [L]

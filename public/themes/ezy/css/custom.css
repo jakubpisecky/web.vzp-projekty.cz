@@ -1,0 +1,30 @@
+/* Obrázky v obsahu stránky – ať nikdy nepřetékají */
+article.content img,
+.content img {
+    max-width: 100% !important;
+    height: auto !important;
+    display: block;
+}
+
+.cta-content p,
+.cta-content li,
+.cta-content span {
+    color: #fff !important;
+}
+.article-detail-thumb {
+    max-width: 300px;
+}
+
+.article-detail-thumb img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+@media (max-width: 767.98px) {
+    .article-detail-thumb {
+        float: none !important;
+        max-width: 100%;
+        margin-left: 0 !important;
+    }
+}

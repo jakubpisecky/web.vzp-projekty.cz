@@ -1,0 +1,19 @@
+# VS Code
+.vscode/sftp.json
+
+# Lokální nastavení
+.env
+.env.*
+
+# Logy
+*.log
+error_log
+
+# Zálohy
+*.zip
+*.sql
+*.sql.gz
+
+# Dočasné soubory
+*.tmp
+*.bak
