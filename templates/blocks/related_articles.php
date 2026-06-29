@@ -7,6 +7,26 @@ if (!in_array($layout, ['vertical', 'horizontal'], true)) {
     $layout = 'vertical';
 }
 
+$sourceType = $block['source_type'] ?? 'manual';
+
+if (!in_array($sourceType, ['manual', 'category'], true)) {
+    $sourceType = 'manual';
+}
+
+$articleLimit = (int)($block['article_limit'] ?? 3);
+
+if ($articleLimit <= 0) {
+    $articleLimit = 3;
+}
+
+$articleOrder = $block['article_order'] ?? 'newest';
+
+if (!in_array($articleOrder, ['newest', 'oldest', 'random'], true)) {
+    $articleOrder = 'newest';
+}
+
+$currentArticleId = (int)($article['id'] ?? 0);
+
 // najdeme stránku s výpisem článků
 $articlesBase = 'aktuality';
 
@@ -23,18 +43,112 @@ if ($resBase && $rowBase = $resBase->fetch_assoc()) {
     $articlesBase = $rowBase['slug'];
 }
 
-$stmt = $conn->prepare("
-    SELECT a.title, a.slug, a.thumbnail, a.content, a.publish_date
-    FROM article_block_related r
-    INNER JOIN articles a ON a.id = r.article_id
-    WHERE r.block_id = ?
-      AND a.status = 'published'
-    ORDER BY r.id ASC
-");
-$stmt->bind_param("i", $block['id']);
-$stmt->execute();
-$articles = $stmt->get_result();
-$stmt->close();
+$articlesArray = [];
+
+if ($sourceType === 'category') {
+
+    $categoryIds = [];
+
+    if (!empty($block['category_ids'])) {
+        $categoryIds = array_filter(array_map('intval', explode(';', $block['category_ids'])));
+    }
+
+    if (!empty($categoryIds)) {
+        $placeholders = implode(',', array_fill(0, count($categoryIds), '?'));
+
+        if ($articleOrder === 'oldest') {
+            $orderSql = "a.publish_date ASC, a.id ASC";
+        } elseif ($articleOrder === 'random') {
+            $orderSql = "RAND()";
+        } else {
+            $orderSql = "a.publish_date DESC, a.id DESC";
+        }
+
+        $sql = "
+            SELECT DISTINCT
+                a.id,
+                a.title,
+                a.slug,
+                a.thumbnail,
+                a.content,
+                a.publish_date
+            FROM articles a
+            INNER JOIN article_category ac ON ac.article_id = a.id
+            WHERE a.status = 'published'
+              AND ac.category_id IN ($placeholders)
+        ";
+
+        $types = str_repeat('i', count($categoryIds));
+        $params = $categoryIds;
+
+        if ($currentArticleId > 0) {
+            $sql .= " AND a.id <> ?";
+            $types .= "i";
+            $params[] = $currentArticleId;
+        }
+
+        $sql .= "
+            ORDER BY {$orderSql}
+            LIMIT ?
+        ";
+
+        $types .= "i";
+        $params[] = $articleLimit;
+
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param($types, ...$params);
+        $stmt->execute();
+        $res = $stmt->get_result();
+
+        while ($row = $res->fetch_assoc()) {
+            $articlesArray[] = $row;
+        }
+
+        $stmt->close();
+    }
+
+} else {
+
+    $sql = "
+        SELECT
+            a.id,
+            a.title,
+            a.slug,
+            a.thumbnail,
+            a.content,
+            a.publish_date
+        FROM article_block_related r
+        INNER JOIN articles a ON a.id = r.article_id
+        WHERE r.block_id = ?
+          AND a.status = 'published'
+    ";
+
+    $types = "i";
+    $params = [(int)$block['id']];
+
+    if ($currentArticleId > 0) {
+        $sql .= " AND a.id <> ?";
+        $types .= "i";
+        $params[] = $currentArticleId;
+    }
+
+    $sql .= "
+        ORDER BY r.id ASC
+    ";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param($types, ...$params);
+    $stmt->execute();
+    $res = $stmt->get_result();
+
+    while ($row = $res->fetch_assoc()) {
+        $articlesArray[] = $row;
+    }
+
+    $stmt->close();
+}
+
+$totalArticles = count($articlesArray);
 ?>
 
 <section class="section <?= e($block['section_class'] ?? '') ?>">
@@ -46,23 +160,13 @@ $stmt->close();
             </h2>
         <?php endif; ?>
 
-        <?php if ($articles->num_rows === 0): ?>
+        <?php if ($totalArticles === 0): ?>
 
             <p class="text-muted">Nejsou vybrané žádné související články.</p>
 
         <?php else: ?>
 
             <?php if ($layout === 'horizontal'): ?>
-
-                <?php
-                $articlesArray = [];
-
-                while ($row = $articles->fetch_assoc()) {
-                    $articlesArray[] = $row;
-                }
-
-                $totalArticles = count($articlesArray);
-                ?>
 
                 <?php foreach ($articlesArray as $index => $a): ?>
 
@@ -137,7 +241,7 @@ $stmt->close();
 
                 <div class="row g-4">
 
-                    <?php while ($a = $articles->fetch_assoc()): ?>
+                    <?php foreach ($articlesArray as $a): ?>
 
                         <?php
                         $url = '/' . ltrim($articlesBase, '/') . '/' . $a['slug'];
@@ -200,7 +304,7 @@ $stmt->close();
 
                         </div>
 
-                    <?php endwhile; ?>
+                    <?php endforeach; ?>
 
                 </div>
 
