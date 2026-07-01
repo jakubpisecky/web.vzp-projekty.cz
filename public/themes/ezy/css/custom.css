@@ -28,3 +28,21 @@ article.content img,
         margin-left: 0 !important;
     }
 }
+
+.rw-form .form-control,
+.rw-form .form-select {
+    border: 2px solid #ced4da !important;
+    background-color: #fff !important;
+    border-radius: 6px !important;
+    min-height: 44px;
+}
+
+.rw-form textarea.form-control {
+    min-height: 180px;
+}
+
+.rw-form .form-control:focus,
+.rw-form .form-select:focus {
+    border-color: #0d6efd !important;
+    box-shadow: 0 0 0 .2rem rgba(13,110,253,.15) !important;
+}
