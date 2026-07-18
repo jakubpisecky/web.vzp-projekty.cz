@@ -1029,5 +1029,54 @@ function renderArticleBlocks(mysqli $conn, array $article): void
         include $file;
     }
 }
+/**
+ * Ověření Google reCAPTCHA v2.
+ *
+ * @param string $token Hodnota z POST[g-recaptcha-response]
+ * @return bool
+ */
+function verifyRecaptcha(string $token): bool
+{
+    $token = trim($token);
 
+    if ($token === '') {
+        return false;
+    }
+
+    $secret = trim((string)setting('recaptcha_secret_key'));
+
+    if ($secret === '') {
+        // Pokud není reCAPTCHA nastavena, považujeme ověření za neúspěšné.
+        return false;
+    }
+
+    $postData = http_build_query([
+        'secret'   => $secret,
+        'response' => $token,
+        'remoteip' => $_SERVER['REMOTE_ADDR'] ?? ''
+    ]);
+
+    $context = stream_context_create([
+        'http' => [
+            'method'  => 'POST',
+            'header'  => "Content-Type: application/x-www-form-urlencoded\r\n",
+            'content' => $postData,
+            'timeout' => 10
+        ]
+    ]);
+
+    $response = @file_get_contents(
+        'https://www.google.com/recaptcha/api/siteverify',
+        false,
+        $context
+    );
+
+    if ($response === false) {
+        return false;
+    }
+
+    $result = json_decode($response, true);
+
+    return !empty($result['success']);
+}
 

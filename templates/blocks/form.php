@@ -157,6 +157,14 @@ if ($isSubmittedForm) {
     if (!empty($_POST['website'] ?? '')) {
         $errors[] = 'Formulář se nepodařilo odeslat.';
     }
+    // reCAPTCHA
+    if ((int)$form['use_recaptcha'] === 1) {
+
+        if (!verifyRecaptcha($_POST['g-recaptcha-response'] ?? '')) {
+            $errors[] = 'Potvrďte prosím, že nejste robot.';
+        }
+
+    }
 
     /*
      * Serverová validace.
@@ -426,10 +434,87 @@ if ($isSubmittedForm) {
                 );
             }
         }
+/*
+ * Potvrzovací e-mail návštěvníkovi.
+ */
+if ((int)($form['send_confirmation'] ?? 0) === 1) {
 
+    $visitorEmail = '';
+
+    foreach ($fields as $field) {
+        if (($field['type'] ?? '') !== 'email') {
+            continue;
+        }
+
+        $fieldName = (string)($field['name'] ?? '');
+
+        if ($fieldName === '') {
+            continue;
+        }
+
+        $candidate = trim((string)($postedValues[$fieldName] ?? ''));
+
+        if (
+            $candidate !== ''
+            && filter_var($candidate, FILTER_VALIDATE_EMAIL)
+        ) {
+            $visitorEmail = $candidate;
+            break;
+        }
+    }
+
+    if ($visitorEmail !== '') {
+        try {
+            $confirmationMail = mailer_from_settings();
+
+            if (!$confirmationMail) {
+                throw new RuntimeException(
+                    'Nepodařilo se vytvořit e-mailového klienta.'
+                );
+            }
+
+            $confirmationSubject = trim(
+                (string)($form['confirmation_subject'] ?? '')
+            );
+
+            if ($confirmationSubject === '') {
+                $confirmationSubject = 'Děkujeme za vaši zprávu';
+            }
+
+            $confirmationText = trim(
+                (string)($form['confirmation_message'] ?? '')
+            );
+
+            if ($confirmationText === '') {
+                $confirmationText =
+                    "Dobrý den,\n\n"
+                    . "děkujeme za odeslání formuláře. "
+                    . "Vaši zprávu jsme přijali.";
+            }
+
+            $confirmationMail->isHTML(true);
+            $confirmationMail->addAddress($visitorEmail);
+            $confirmationMail->Subject = $confirmationSubject;
+            $confirmationMail->Body = nl2br(e($confirmationText));
+            $confirmationMail->AltBody = $confirmationText;
+
+            $confirmationMail->send();
+
+        } catch (Throwable $e) {
+            error_log(
+                'Form confirmation mail error: ' . $e->getMessage()
+            );
+        }
+    } else {
+        error_log(
+            'Form confirmation mail: nebylo nalezeno vyplněné pole typu email.'
+        );
+    }
+}
         $success = true;
         $postedValues = [];
     }
+    
 }
 ?>
 
@@ -826,8 +911,17 @@ if ($isSubmittedForm) {
                     <?php endforeach; ?>
 
                 </div>
+                 <?php if ((int)$form['use_recaptcha'] === 1): ?>
 
+                    <div class="mt-4">
+                        <div class="g-recaptcha"
+                            data-sitekey="<?= e(setting('recaptcha_site_key')) ?>">
+                        </div>
+                    </div>
+
+                <?php endif; ?>                    
                 <div class="mt-4">
+                    
                     <button
                         type="submit"
                         class="btn btn-primary">

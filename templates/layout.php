@@ -48,6 +48,8 @@
 
 		<!-- Examples -->
 		<script src="<?= $themeBase ?>/js/examples/examples.portfolio.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
   <!-- Analytics (BODY) -->
 <?= analytics_body_html() ?>
 
