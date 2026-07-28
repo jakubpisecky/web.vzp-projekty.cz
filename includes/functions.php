@@ -305,15 +305,60 @@ if (!function_exists('tpl_key')) {
 
 // Includne šablonu a předá jí potřebné proměnné
 if (!function_exists('include_template')) {
-  function include_template(string $name): void {
-    global $conn, $page, $section, $article, $gallery,
-           $title, $meta_description,
-           $articlesBase, $galleryBase, $homeSlug;
+/**
+ * Načte frontendovou šablonu.
+ *
+ * Druhý parametr umožňuje předat šabloně data konkrétního modulu,
+ * například pracoviště, navigaci nebo kategorie.
+ *
+ * Původní globální proměnné zůstávají zachované,
+ * takže současné šablony není nutné upravovat.
+ */
+function include_template(string $name, array $data = []): void
+{
+    global $conn,
+           $page,
+           $section,
+           $article,
+           $gallery,
+           $title,
+           $meta_description,
+           $articlesBase,
+           $galleryBase,
+           $homeSlug;
 
-    $tpl = __DIR__ . "/../templates/{$name}.php";
-    if (!is_file($tpl)) $tpl = __DIR__ . "/../templates/page.php";
+    $safeName = preg_replace(
+        '/[^a-zA-Z0-9_-]/',
+        '',
+        $name
+    );
+
+    if ($safeName === '') {
+        $safeName = 'page';
+    }
+
+    $tpl = __DIR__
+        . "/../templates/"
+        . $safeName
+        . ".php";
+
+    if (!is_file($tpl)) {
+        $tpl = __DIR__
+            . "/../templates/page.php";
+    }
+
+    /*
+     * Předaná data převedeme na proměnné šablony.
+     *
+     * EXTR_SKIP zabrání přepsání existujících proměnných,
+     * například $conn, $page nebo $title.
+     */
+    if ($data) {
+        extract($data, EXTR_SKIP);
+    }
+
     include $tpl;
-  }
+}
 }
 
 // === SETTINGS (tabulka: settings[key, value]) ===
