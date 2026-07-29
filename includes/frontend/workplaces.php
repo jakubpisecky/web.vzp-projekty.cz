@@ -236,8 +236,8 @@ function workplaces_get_page_by_slug(
     string $workplaceSlug,
     string $pageSlug
 ): ?array {
-    $workplaceSlug = slugify($workplaceSlug);
-    $pageSlug = slugify($pageSlug);
+    $workplaceSlug = frontend_slugify($workplaceSlug);
+    $pageSlug = frontend_slugify($pageSlug);
 
     if (
         $workplaceId <= 0
@@ -383,7 +383,7 @@ function workplaces_get_navigation(
 
     $result = $stmt->get_result();
 
-    $workplaceSlug = slugify($workplaceSlug);
+    $workplaceSlug = frontend_slugify($workplaceSlug);
     $prefix = 'pracoviste-' . $workplaceSlug . '-';
 
     while ($row = $result->fetch_assoc()) {

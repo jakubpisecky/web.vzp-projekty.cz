@@ -303,6 +303,35 @@ if (!function_exists('tpl_key')) {
   }
 }
 
+if (!function_exists('frontend_slugify')) {
+    function frontend_slugify(string $value): string
+    {
+        $value = trim($value);
+
+        if ($value === '') {
+            return '';
+        }
+
+        $transliterator = Transliterator::create(
+            'Any-Latin; Latin-ASCII; Lower()'
+        );
+
+        if ($transliterator) {
+            $value = $transliterator->transliterate($value);
+        } else {
+            $value = strtolower($value);
+        }
+
+        $value = preg_replace(
+            '/[^a-z0-9]+/',
+            '-',
+            $value
+        );
+
+        return trim((string)$value, '-');
+    }
+}
+
 // Includne šablonu a předá jí potřebné proměnné
 if (!function_exists('include_template')) {
 /**

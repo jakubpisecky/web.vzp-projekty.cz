@@ -103,10 +103,10 @@ $stmt->close();
                     <?php while ($m = $members->fetch_assoc()): ?>
 
                         <div class="col-md-6 col-lg-4">
-                            <article class="card h-100 border-0 shadow-sm bg-white text-center">
+                            <article class="card h-100 border-0 shadow-sm bg-light-5 text-center">
 
                                 <?php if (!empty($m['photo'])): ?>
-                                    <div class="p-4 pb-0">
+                                    <div class="p-5 pb-0">
                                         <img src="<?= e($m['photo']) ?>"
                                              alt="<?= e($m['name']) ?>"
                                              class="rounded-circle border"

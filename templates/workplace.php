@@ -310,13 +310,37 @@ $isNavigationItemActive = static function (
 
                     <div class="col-lg-8">
 
-                        <div class="d-flex flex-wrap gap-2 mb-3">
+                        <?php if ($perex !== ''): ?>
+
+                            <div class="lead mb-4">
+                                <?= $perex ?>
+                            </div>
+
+                        <?php endif; ?>
+
+                    </div>
+
+                    <?php if (
+                        $email !== ''
+                        || $phone !== ''
+                        || $building !== ''
+                        || $floor !== ''
+                        || $address !== ''
+                    ): ?>
+
+                        <div class="col-lg-4">
+
+                                <div class="card-body bg-light-5 p-5">
+
+                                    <h2 class="h4 mb-4">
+                                        Kontakt a umístění
+                                    </h2>
+
+                                    <div class="d-flex flex-wrap gap-2 mb-5">
 
                             <?php if ($locationName !== ''): ?>
 
-                                <span class="badge bg-primary">
-
-                                    <i class="bi bi-geo-alt me-1"></i>
+                                <span class="badge bg-primary badge-md">
 
                                     <?= e($locationName) ?>
 
@@ -326,7 +350,7 @@ $isNavigationItemActive = static function (
 
                             <?php if ($typeName !== ''): ?>
 
-                                <span class="badge bg-light text-dark border">
+                                <span class="badge bg-light text-dark border badge-md">
 
                                     <?= e($typeName) ?>
 
@@ -336,24 +360,81 @@ $isNavigationItemActive = static function (
 
                         </div>
 
-                        <?php if ($perex !== ''): ?>
+                                    <div class="workplace-contact-list">
 
-                            <div class="lead mb-4">
-                                <?= nl2br(e($perex)) ?>
-                            </div>
+                                        <?php if ($phone !== ''): ?>
+                                            <div class="workplace-contact-row">
+                                                <i class="fa fa-phone" aria-hidden="true"></i>
 
-                        <?php endif; ?>
+                                                <div>
+                                                    <strong>Telefon:</strong>
 
-                        <?php if (
+                                                    <a href="<?= e(tel_href($phone)) ?>">
+                                                        <?= e($phone) ?>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        <?php endif; ?>
+
+                                        <?php if ($email !== ''): ?>
+                                            <div class="workplace-contact-row">
+                                                <i class="fa fa-envelope" aria-hidden="true"></i>
+
+                                                <div>
+                                                    <strong>E-mail:</strong>
+
+                                                    <a href="mailto:<?= e($email) ?>">
+                                                        <?= e($email) ?>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        <?php endif; ?>
+
+                                        <?php if ($address !== ''): ?>
+                                            <div class="workplace-contact-row">
+                                                <i class="fa fa-map-marker" aria-hidden="true"></i>
+
+                                                <div>
+                                                    <strong>Adresa:</strong>
+                                                    <?= e($address) ?>
+                                                </div>
+                                            </div>
+                                        <?php endif; ?>
+
+                                        <?php if ($building !== '' || $floor !== ''): ?>
+                                            <div class="workplace-contact-row">
+                                                <i class="fa fa-building" aria-hidden="true"></i>
+
+                                                <div>
+                                                    <?php if ($building !== ''): ?>
+                                                        <strong>Budova:</strong>
+                                                        <?= e($building) ?>
+                                                    <?php endif; ?>
+
+                                                    <?php if ($building !== '' && $floor !== ''): ?>
+                                                        <span class="mx-2">|</span>
+                                                    <?php endif; ?>
+
+                                                    <?php if ($floor !== ''): ?>
+                                                        <strong>Patro:</strong>
+                                                        <?= e($floor) ?>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </div>
+                                        <?php endif; ?>
+
+                                    </div>
+
+                                    <?php if (
                             $workplaceCategories
                             || $workplaceSpecializations
                         ): ?>
 
-                            <div class="row g-4">
+                            <div class="row mt-5">
 
                                 <?php if ($workplaceCategories): ?>
 
-                                    <div class="col-md-6">
+                                    <div class="col-md-12">
 
                                         <h2 class="h5 mb-3">
                                             Kategorie
@@ -366,7 +447,7 @@ $isNavigationItemActive = static function (
                                                 as $category
                                             ): ?>
 
-                                                <span class="badge bg-light text-dark border">
+                                                <span class="badge bg-light text-dark border badge-md">
 
                                                     <?= e(
                                                         $category['name']
@@ -387,7 +468,7 @@ $isNavigationItemActive = static function (
                                     $workplaceSpecializations
                                 ): ?>
 
-                                    <div class="col-md-6">
+                                    <div class="col-md-12">
 
                                         <h2 class="h5 mb-3">
                                             Odbornosti
@@ -400,7 +481,7 @@ $isNavigationItemActive = static function (
                                                 as $specialization
                                             ): ?>
 
-                                                <span class="badge bg-light text-dark border">
+                                                <span class="badge bg-light text-dark border badge-md">
 
                                                     <?= e(
                                                         $specialization['name']
@@ -420,148 +501,6 @@ $isNavigationItemActive = static function (
                             </div>
 
                         <?php endif; ?>
-
-                    </div>
-
-                    <?php if (
-                        $email !== ''
-                        || $phone !== ''
-                        || $building !== ''
-                        || $floor !== ''
-                        || $address !== ''
-                    ): ?>
-
-                        <div class="col-lg-4">
-
-                            <aside class="card border-0 shadow-sm">
-
-                                <div class="card-body p-4">
-
-                                    <h2 class="h4 mb-4">
-                                        Kontakt a umístění
-                                    </h2>
-
-                                    <ul class="list-unstyled mb-0">
-
-                                        <?php if ($phone !== ''): ?>
-
-                                            <li class="d-flex gap-3 mb-3">
-
-                                                <i class="bi bi-telephone text-primary fs-5"></i>
-
-                                                <div>
-
-                                                    <div class="text-muted small">
-                                                        Telefon
-                                                    </div>
-
-                                                    <a
-                                                        href="<?= e(tel_href($phone)) ?>">
-
-                                                        <?= e($phone) ?>
-
-                                                    </a>
-
-                                                </div>
-
-                                            </li>
-
-                                        <?php endif; ?>
-
-                                        <?php if ($email !== ''): ?>
-
-                                            <li class="d-flex gap-3 mb-3">
-
-                                                <i class="bi bi-envelope text-primary fs-5"></i>
-
-                                                <div>
-
-                                                    <div class="text-muted small">
-                                                        E-mail
-                                                    </div>
-
-                                                    <a href="mailto:<?= e($email) ?>">
-
-                                                        <?= e($email) ?>
-
-                                                    </a>
-
-                                                </div>
-
-                                            </li>
-
-                                        <?php endif; ?>
-
-                                        <?php if ($address !== ''): ?>
-
-                                            <li class="d-flex gap-3 mb-3">
-
-                                                <i class="bi bi-geo-alt text-primary fs-5"></i>
-
-                                                <div>
-
-                                                    <div class="text-muted small">
-                                                        Adresa
-                                                    </div>
-
-                                                    <?= e($address) ?>
-
-                                                </div>
-
-                                            </li>
-
-                                        <?php endif; ?>
-
-                                        <?php if (
-                                            $building !== ''
-                                            || $floor !== ''
-                                        ): ?>
-
-                                            <li class="d-flex gap-3">
-
-                                                <i class="bi bi-building text-primary fs-5"></i>
-
-                                                <div>
-
-                                                    <?php if (
-                                                        $building !== ''
-                                                    ): ?>
-
-                                                        <div>
-
-                                                            <span class="text-muted">
-                                                                Budova:
-                                                            </span>
-
-                                                            <?= e($building) ?>
-
-                                                        </div>
-
-                                                    <?php endif; ?>
-
-                                                    <?php if (
-                                                        $floor !== ''
-                                                    ): ?>
-
-                                                        <div>
-
-                                                            <span class="text-muted">
-                                                                Patro:
-                                                            </span>
-
-                                                            <?= e($floor) ?>
-
-                                                        </div>
-
-                                                    <?php endif; ?>
-
-                                                </div>
-
-                                            </li>
-
-                                        <?php endif; ?>
-
-                                    </ul>
 
                                 </div>
 

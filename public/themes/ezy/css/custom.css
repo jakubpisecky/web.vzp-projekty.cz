@@ -46,3 +46,48 @@ article.content img,
     border-color: #0d6efd !important;
     box-shadow: 0 0 0 .2rem rgba(13,110,253,.15) !important;
 }
+#workplaces-filter .form-control,
+#workplaces-filter .form-select,
+#workplaces-filter .input-group-text {
+    min-height: 48px;
+    font-size: 0.8rem;
+}
+
+.workplace-contact-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.workplace-contact-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, .08);
+    line-height: 1.45;
+}
+
+.workplace-contact-row:first-child {
+    padding-top: 0;
+}
+
+.workplace-contact-row:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
+.workplace-contact-row > i {
+    width: 22px;
+    flex: 0 0 22px;
+    color: var(--primary);
+    font-size: 18px;
+    text-align: center;
+}
+
+.workplace-contact-row a {
+    text-decoration: none;
+}
+
+.workplace-contact-row a:hover {
+    text-decoration: underline;
+}

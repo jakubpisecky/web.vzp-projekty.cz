@@ -66,7 +66,7 @@ foreach ($workplaces as $workplaceItem) {
     );
 
     if ($locationName !== '') {
-        $locationKey = slugify($locationName);
+        $locationKey = frontend_slugify($locationName);
 
         $locationOptions[$locationKey] = $locationName;
         $workplaceItem['location_filter'] = $locationKey;
@@ -82,7 +82,7 @@ foreach ($workplaces as $workplaceItem) {
     );
 
     if ($typeName !== '') {
-        $typeKey = slugify($typeName);
+        $typeKey = frontend_slugify($typeName);
 
         $typeOptions[$typeKey] = $typeName;
         $workplaceItem['type_filter'] = $typeKey;
@@ -104,7 +104,7 @@ foreach ($workplaces as $workplaceItem) {
             continue;
         }
 
-        $categoryKey = slugify($categoryName);
+        $categoryKey = frontend_slugify($categoryName);
 
         $categoryOptions[$categoryKey] = $categoryName;
         $categoryKeys[] = $categoryKey;
@@ -126,7 +126,7 @@ foreach ($workplaces as $workplaceItem) {
             continue;
         }
 
-        $specializationKey = slugify(
+        $specializationKey = frontend_slugify(
             $specializationName
         );
 
@@ -209,11 +209,11 @@ natcasesort($specializationOptions);
                 class="card border-0 shadow-sm mb-5"
                 id="workplaces-filter">
 
-                <div class="card-body p-4">
+                <div class="card-body bg-light-5 p-5">
 
-                    <div class="row g-3">
+                    <div class="row">
 
-                        <div class="col-lg-4">
+                        <div class="col-lg-3">
 
                             <label
                                 for="workplace-search"
@@ -227,7 +227,7 @@ natcasesort($specializationOptions);
 
                                 <span class="input-group-text">
 
-                                    <i class="bi bi-search"></i>
+                                    <i class="fa fa-search"></i>
 
                                 </span>
 
@@ -235,7 +235,7 @@ natcasesort($specializationOptions);
                                     type="search"
                                     id="workplace-search"
                                     class="form-control"
-                                    placeholder="Název kliniky, oddělení nebo centra">
+                                    placeholder="Název kliniky nebo pracoviště">
 
                             </div>
 
@@ -243,7 +243,7 @@ natcasesort($specializationOptions);
 
                         <?php if ($locationOptions): ?>
 
-                            <div class="col-md-6 col-lg-2">
+                            <div class="col-md-6 col-lg-3">
 
                                 <label
                                     for="workplace-location"
@@ -252,7 +252,7 @@ natcasesort($specializationOptions);
                                     Nemocnice
 
                                 </label>
-
+                                
                                 <select
                                     id="workplace-location"
                                     class="form-select">
@@ -275,14 +275,14 @@ natcasesort($specializationOptions);
                                     <?php endforeach; ?>
 
                                 </select>
-
+                                
                             </div>
 
                         <?php endif; ?>
 
                         <?php if ($typeOptions): ?>
 
-                            <div class="col-md-6 col-lg-2">
+                            <div class="col-md-6 col-lg-3">
 
                                 <label
                                     for="workplace-type"
@@ -321,7 +321,7 @@ natcasesort($specializationOptions);
 
                         <?php if ($categoryOptions): ?>
 
-                            <div class="col-md-6 col-lg-2">
+                            <div class="col-md-6 col-lg-3">
 
                                 <label
                                     for="workplace-category"
@@ -538,7 +538,7 @@ natcasesort($specializationOptions);
 
                                 <?php endif; ?>
 
-                                <div class="card-body d-flex flex-column p-4">
+                                <div class="card-body d-flex flex-column bg-light-5 p-4">
 
                                     <div class="mb-3">
 
@@ -550,9 +550,7 @@ natcasesort($specializationOptions);
                                             )
                                         ): ?>
 
-                                            <span class="badge bg-primary me-1 mb-1">
-
-                                                <i class="bi bi-geo-alt me-1"></i>
+                                            <span class="badge bg-primary badge-sm me-1 mb-1">
 
                                                 <?= e(
                                                     $workplaceItem[
@@ -572,7 +570,7 @@ natcasesort($specializationOptions);
                                             )
                                         ): ?>
 
-                                            <span class="badge bg-light text-dark border mb-1">
+                                            <span class="badge bg-light text-dark badge-sm border mb-1">
 
                                                 <?= e(
                                                     $workplaceItem[
