@@ -1,5 +1,5 @@
-
 <?php
+
 $meta_description = $meta_description
   ?? ($page['meta_description'] ?? '')
   ?? text_excerpt($page['content'] ?? '', 180);

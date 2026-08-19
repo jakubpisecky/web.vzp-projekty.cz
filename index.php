@@ -350,10 +350,15 @@ if (count($segs) === 1) {
 
         include_template('gallery');
 
-    } elseif ($tplName === 'contact') {
+    }  elseif ($tplName === 'team') {
+    include_template('team');
+    }
+    elseif ($tplName === 'contact') {
         include_template('contact');
 
-    } elseif (in_array(
+    } 
+    
+    elseif (in_array(
         $tplName,
         ['homepage', 'home'],
         true
@@ -482,7 +487,82 @@ if (
 }
 
 /*
- * 3. Obecná podstránka
+ * 3. Detail člena týmu
+ * /tym/jan-novak
+ */
+if (
+    count($segs) === 2
+    && $tplName === 'team'
+) {
+    $memberSlug = trim((string)$segs[1]);
+
+    $stmt = $conn->prepare("
+        SELECT
+            id,
+            name,
+            slug,
+            position,
+            description,
+            email,
+            phone,
+            photo,
+            show_detail
+
+        FROM team_members
+
+        WHERE slug = ?
+          AND is_active = 1
+          AND show_detail = 1
+
+        LIMIT 1
+    ");
+
+    $stmt->bind_param(
+        "s",
+        $memberSlug
+    );
+
+    $stmt->execute();
+
+    $member = $stmt
+        ->get_result()
+        ->fetch_assoc();
+
+    $stmt->close();
+
+   if ($member) {
+    $title = $member['name'];
+
+    $meta_description = text_excerpt(
+        $member['description'] ?? '',
+        180
+    );
+
+    $meta_image = $member['photo'] ?? null;
+
+    include_template('team_detail', [
+        'member' => $member,
+        'page' => $page,
+    ]);
+
+    exit;
+}
+    /*
+     * Člen neexistuje, není aktivní
+     * nebo nemá povolený detail.
+     */
+    http_response_code(404);
+
+    $title = 'Člen týmu nenalezen';
+    $meta_description = '';
+
+    include_template('404');
+    exit;
+}
+
+
+/*
+ * 4. Obecná podstránka
  * /rodic/podstranka
  */
 if (count($segs) === 2) {
