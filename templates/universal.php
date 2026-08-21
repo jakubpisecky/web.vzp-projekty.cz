@@ -75,9 +75,9 @@ ob_start();
 
     <?php if ($sidebarNavigation): ?>
 
-        <div class="container">
+        <div class="container my-5">
 
-            <div class="row">
+    <div class="row">
 
                 <aside class="col-lg-3 mb-4 mb-lg-0">
 
