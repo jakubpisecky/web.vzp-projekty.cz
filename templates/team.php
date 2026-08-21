@@ -167,7 +167,7 @@ ob_start();
 
                                             <a
                                                 href="<?= e($detailUrl) ?>"
-                                                class="btn btn-primary btn-sm mt-2"
+                                                class="btn btn-primary btn-3 mt-2"
                                             >
                                                 Zobrazit profil
                                             </a>

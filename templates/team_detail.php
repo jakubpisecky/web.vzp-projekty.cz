@@ -154,7 +154,7 @@ ob_start();
 
                 <a
                     href="<?= e($teamBaseUrl) ?>"
-                    class="btn btn-primary btn-md"
+                    class="btn btn-primary btn-3"
                 >
                     Zpět na tým
                 </a>

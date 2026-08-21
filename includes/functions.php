@@ -1154,3 +1154,256 @@ function verifyRecaptcha(string $token): bool
     return !empty($result['success']);
 }
 
+function frontend_navigation_get(mysqli $conn, int $navigationId): ?array
+{
+    if ($navigationId <= 0) {
+        return null;
+    }
+
+    $stmt = $conn->prepare("
+        SELECT
+            id,
+            name,
+            is_active
+        FROM navigation
+        WHERE id = ?
+          AND is_active = 1
+        LIMIT 1
+    ");
+
+    $stmt->bind_param("i", $navigationId);
+    $stmt->execute();
+
+    $navigation = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+
+    if (!$navigation) {
+        return null;
+    }
+
+    $stmt = $conn->prepare("
+        SELECT
+            ni.id,
+            ni.parent_id,
+            ni.title,
+            ni.page_id,
+            ni.url,
+            ni.target,
+            ni.sort_order,
+
+            p.slug AS page_slug,
+            p.parent_id AS page_parent_id
+
+        FROM navigation_items ni
+
+        LEFT JOIN pages p
+            ON p.id = ni.page_id
+
+        WHERE ni.navigation_id = ?
+          AND ni.is_active = 1
+
+        ORDER BY
+            ni.sort_order ASC,
+            ni.id ASC
+    ");
+
+    $stmt->bind_param("i", $navigationId);
+    $stmt->execute();
+
+    $result = $stmt->get_result();
+
+    $items = [];
+
+    while ($row = $result->fetch_assoc()) {
+        $row['children'] = [];
+        $items[(int)$row['id']] = $row;
+    }
+
+    $stmt->close();
+
+    $tree = [];
+
+    foreach ($items as $id => &$item) {
+
+        $parentId = (int)($item['parent_id'] ?? 0);
+
+        if (
+            $parentId > 0
+            && isset($items[$parentId])
+        ) {
+            $items[$parentId]['children'][] = &$item;
+        } else {
+            $tree[] = &$item;
+        }
+    }
+
+    unset($item);
+
+    $navigation['items'] = $tree;
+
+    return $navigation;
+}
+function frontend_page_url(mysqli $conn, int $pageId): string
+{
+    if ($pageId <= 0) {
+        return '#';
+    }
+
+    $parts = [];
+    $currentId = $pageId;
+
+    while ($currentId > 0) {
+
+        $stmt = $conn->prepare("
+            SELECT
+                id,
+                slug,
+                parent_id
+            FROM pages
+            WHERE id = ?
+              AND status = 'published'
+            LIMIT 1
+        ");
+
+        $stmt->bind_param("i", $currentId);
+        $stmt->execute();
+
+        $page = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+
+        if (!$page) {
+            break;
+        }
+
+        array_unshift(
+            $parts,
+            trim((string)$page['slug'], '/')
+        );
+
+        $currentId = (int)($page['parent_id'] ?? 0);
+    }
+
+    if (!$parts) {
+        return '#';
+    }
+
+    return '/' . implode('/', $parts);
+}
+
+function render_sidebar_navigation(
+    mysqli $conn,
+    array $navigation,
+    string $currentPath = ''
+): void {
+
+    if (empty($navigation['items'])) {
+        return;
+    }
+
+    $renderItems = function (
+        array $items,
+        int $level = 0
+    ) use (
+        &$renderItems,
+        $conn,
+        $currentPath
+    ) {
+        if (!$items) {
+            return;
+        }
+
+        $ulClass = $level === 0
+            ? 'sidebar-menu'
+            : 'sidebar-submenu';
+
+        echo '<ul class="' . $ulClass . '">';
+
+        foreach ($items as $item) {
+
+            if (!empty($item['page_id'])) {
+
+                $href = frontend_page_url(
+                    $conn,
+                    (int)$item['page_id']
+                );
+
+            } else {
+
+                $href = trim(
+                    (string)($item['url'] ?? '')
+                );
+
+                if ($href === '') {
+                    continue;
+                }
+            }
+
+            $currentNormalized =
+                '/' . trim($currentPath, '/');
+
+            $hrefNormalized =
+                '/' . trim($href, '/');
+
+            $isActive =
+                $currentNormalized === $hrefNormalized;
+
+            $target =
+                ($item['target'] ?? '_self') === '_blank'
+                    ? '_blank'
+                    : '_self';
+
+            $hasChildren = !empty(
+                $item['children']
+            );
+
+            $liClasses = [
+                'sidebar-menu-item'
+            ];
+
+            if ($isActive) {
+                $liClasses[] = 'active';
+            }
+
+            if ($hasChildren) {
+                $liClasses[] = 'has-children';
+            }
+
+            echo '<li class="' . implode(' ', $liClasses) . '">';
+
+            echo '<a href="' . e($href) . '"'
+                . ' class="sidebar-menu-link"'
+                . ' target="' . e($target) . '"';
+
+            if ($target === '_blank') {
+                echo ' rel="noopener noreferrer"';
+            }
+
+            echo '>';
+
+            echo '<span>'
+                . e($item['title'])
+                . '</span>';
+
+            if ($target === '_blank') {
+                echo '<i class="fas fa-arrow-up-right-from-square sidebar-external"></i>';
+            }
+
+            echo '</a>';
+
+            if ($hasChildren) {
+                $renderItems(
+                    $item['children'],
+                    $level + 1
+                );
+            }
+
+            echo '</li>';
+        }
+
+        echo '</ul>';
+    };
+
+    $renderItems(
+        $navigation['items']
+    );
+}

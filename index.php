@@ -74,7 +74,8 @@ $res = $conn->query("
         content,
         meta_title,
         meta_description,
-        template
+        template,
+        sidebar_navigation_id
 
     FROM pages
 
@@ -176,7 +177,8 @@ $stmt = $conn->prepare("
         content,
         meta_title,
         meta_description,
-        template
+        template,
+        sidebar_navigation_id
 
     FROM pages
 
@@ -272,7 +274,8 @@ if (count($segs) === 3) {
             content,
             meta_title,
             meta_description,
-            template
+            template,
+            sidebar_navigation_id
 
         FROM pages
 
@@ -577,7 +580,8 @@ if (count($segs) === 2) {
             content,
             meta_title,
             meta_description,
-            template
+            template,
+            sidebar_navigation_id
 
         FROM pages
 
