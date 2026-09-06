@@ -468,7 +468,7 @@ $isNavigationItemActive = static function (
                                     $workplaceSpecializations
                                 ): ?>
 
-                                    <div class="col-md-12">
+                                    <div class="col-md-12 mt-4">
 
                                         <h2 class="h5 mb-3">
                                             Odbornosti

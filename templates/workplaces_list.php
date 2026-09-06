@@ -213,7 +213,7 @@ natcasesort($specializationOptions);
 
                     <div class="row">
 
-                        <div class="col-lg-3">
+                        <div class="col-lg-4 mb-3">
 
                             <label
                                 for="workplace-search"
@@ -243,7 +243,7 @@ natcasesort($specializationOptions);
 
                         <?php if ($locationOptions): ?>
 
-                            <div class="col-md-6 col-lg-3">
+                            <div class="col-md-6 col-lg-4 mb-3">
 
                                 <label
                                     for="workplace-location"
@@ -282,7 +282,7 @@ natcasesort($specializationOptions);
 
                         <?php if ($typeOptions): ?>
 
-                            <div class="col-md-6 col-lg-3">
+                            <div class="col-md-6 col-lg-4 mb-3">
 
                                 <label
                                     for="workplace-type"
@@ -321,7 +321,7 @@ natcasesort($specializationOptions);
 
                         <?php if ($categoryOptions): ?>
 
-                            <div class="col-md-6 col-lg-3">
+                            <div class="col-md-6 col-lg-4 mb-3">
 
                                 <label
                                     for="workplace-category"
@@ -360,7 +360,7 @@ natcasesort($specializationOptions);
 
                         <?php if ($specializationOptions): ?>
 
-                            <div class="col-md-6 col-lg-2">
+                            <div class="col-md-6 col-lg-4 mb-3">
 
                                 <label
                                     for="workplace-specialization"
@@ -399,7 +399,7 @@ natcasesort($specializationOptions);
 
                     </div>
 
-                    <div class="d-flex flex-wrap align-items-center gap-3 mt-3">
+                    <div class="d-flex flex-wrap align-items-center gap-3">
 
                         <button
                             type="button"
