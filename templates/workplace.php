@@ -499,6 +499,7 @@ $isNavigationItemActive = static function (
                                 <?php endif; ?>
 
                             </div>
+                            
 
                         <?php endif; ?>
 
