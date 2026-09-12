@@ -1,7 +1,5 @@
 <?php
 
-require_once __DIR__ . '/block_definitions.php';
-
 // === Globální helpery pro frontend ===
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
@@ -940,7 +938,11 @@ function renderPageBlocks(mysqli $conn, $page): void
         /*
          * Nový jednoduchý blok z registru.
          */
-        if (rw_is_simple_block($type)) {
+        if (in_array(
+            $type,
+            ['alert', 'button', 'youtube', 'map'],
+            true
+        )) {
 
             $simpleFile = __DIR__
                 . '/../templates/blocks/simple.php';
@@ -1146,7 +1148,11 @@ function renderArticleBlocks(mysqli $conn, array $article): void
         /*
          * Nový jednoduchý blok z registru.
          */
-        if (rw_is_simple_block($type)) {
+        if (in_array(
+            $type,
+            ['alert', 'button', 'youtube', 'map'],
+            true
+        )) {
 
             $simpleFile = __DIR__
                 . '/../templates/blocks/simple.php';
@@ -1443,6 +1449,7 @@ function render_sidebar_navigation(
             }
 
             echo '</a>';
+            
 
             if ($hasChildren) {
                 $renderItems(
