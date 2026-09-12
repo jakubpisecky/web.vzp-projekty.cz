@@ -148,7 +148,7 @@ $socials = function_exists('settings_social_links') ? settings_social_links() : 
                 <div class="header-column justify-content-start">
                     <div class="header-logo">
                         <a href="/">
-                            <img alt="<?= htmlspecialchars($siteTitle ?? 'Logo') ?>" width="92" height="35" src="<?= htmlspecialchars($logoSrc) ?>">
+                            <img alt="<?= htmlspecialchars($siteTitle ?? 'Logo') ?>" height="50" src="<?= htmlspecialchars($logoSrc) ?>">
                         </a>
                     </div>
                 </div>

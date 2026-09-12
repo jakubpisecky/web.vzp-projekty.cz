@@ -1,4 +1,7 @@
 <?php
+
+require_once __DIR__ . '/block_definitions.php';
+
 // === Globální helpery pro frontend ===
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
@@ -901,22 +904,50 @@ function renderPageBlocks(mysqli $conn, $page): void
           AND is_active = 1
         ORDER BY sort_order ASC, id ASC
     ");
+
     $stmt->bind_param("i", $pageId);
     $stmt->execute();
+
     $blocks = $stmt->get_result();
+
     $stmt->close();
 
     while ($block = $blocks->fetch_assoc()) {
-        $type = preg_replace('/[^a-z0-9_]/', '', $block['type'] ?? '');
+
+        $type = preg_replace(
+            '/[^a-z0-9_]/',
+            '',
+            $block['type'] ?? ''
+        );
 
         if ($type === '') {
             continue;
         }
 
-        $file = __DIR__ . '/../templates/blocks/' . $type . '.php';
+        /*
+         * Existující specializovaný blok.
+         */
+        $file = __DIR__
+            . '/../templates/blocks/'
+            . $type
+            . '.php';
 
         if (is_file($file)) {
             include $file;
+            continue;
+        }
+
+        /*
+         * Nový jednoduchý blok z registru.
+         */
+        if (rw_is_simple_block($type)) {
+
+            $simpleFile = __DIR__
+                . '/../templates/blocks/simple.php';
+
+            if (is_file($simpleFile)) {
+                include $simpleFile;
+            }
         }
     }
 }function handleRedirects(mysqli $conn): void
@@ -1088,19 +1119,42 @@ function renderArticleBlocks(mysqli $conn, array $article): void
     $stmt->close();
 
     foreach ($articleBlocks as $block) {
-        $type = preg_replace('/[^a-z0-9_]/', '', $block['type'] ?? '');
+
+        $type = preg_replace(
+            '/[^a-z0-9_]/',
+            '',
+            $block['type'] ?? ''
+        );
 
         if ($type === '') {
             continue;
         }
 
-        $file = __DIR__ . '/../templates/blocks/' . $type . '.php';
+        /*
+         * Existující specializovaný blok.
+         */
+        $file = __DIR__
+            . '/../templates/blocks/'
+            . $type
+            . '.php';
 
-        if (!is_file($file)) {
+        if (is_file($file)) {
+            include $file;
             continue;
         }
 
-        include $file;
+        /*
+         * Nový jednoduchý blok z registru.
+         */
+        if (rw_is_simple_block($type)) {
+
+            $simpleFile = __DIR__
+                . '/../templates/blocks/simple.php';
+
+            if (is_file($simpleFile)) {
+                include $simpleFile;
+            }
+        }
     }
 }
 /**

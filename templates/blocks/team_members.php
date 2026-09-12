@@ -65,6 +65,9 @@ $manualMemberIds = array_values(
     )
 );
 
+$showTeamButton =
+    (int)($block['show_team_button'] ?? 1) === 1;
+
 
 /*
  * =====================================================
@@ -753,7 +756,8 @@ if (!in_array(
 
 
             <?php if (
-                $teamPageUrl !== ''
+                $showTeamButton
+                && $teamPageUrl !== ''
                 && $totalMembers > count($members)
             ): ?>
 

@@ -18,6 +18,5 @@
                 <?= e($block['button_text']) ?>
             </a>
         <?php endif; ?>
-
     </div>
 </section>

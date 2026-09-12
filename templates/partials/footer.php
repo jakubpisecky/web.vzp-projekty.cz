@@ -13,7 +13,7 @@ if ($resArticlesPage && $row = $resArticlesPage->fetch_assoc()) {
     $articlesBaseSlug = trim($row['slug'], '/');
 }
 
-// Posledních 5 článků
+// Poslední 3 články
 $recentPosts = [];
 $stmt = $conn->prepare("
     SELECT id, title, slug, publish_date
@@ -30,15 +30,20 @@ while ($row = $res->fetch_assoc()) {
 $stmt->close();
 
 // Nastavení z adminu
-$site     = setting('site_title', 'Web');
-$tagline  = setting('site_tagline', '');
-$logo     = setting('site_logo_url', '');
-$logo     = $logo ? media_url($logo) : '';
-$email    = trim((string) setting('contact_email', ''));
-$phone    = trim((string) setting('contact_phone', ''));
-$address  = setting('contact_address', setting('contact_address_html', '')); // podporuješ-li oba klíče
-$socials  = settings_social_links(); // očekává se pole odkazů (typicky type + url)
-$year     = (int)date('Y');
+$site        = setting('site_title', 'Web');
+$tagline     = setting('site_tagline', '');
+
+$logo        = setting('site_logo_url', '');
+$logo        = $logo ? media_url($logo) : '';
+
+$footerLogo  = setting('site_footer_logo_url', '');
+$footerLogo  = $footerLogo ? media_url($footerLogo) : $logo;
+
+$email       = trim((string) setting('contact_email', ''));
+$phone       = trim((string) setting('contact_phone', ''));
+$address     = setting('contact_address', setting('contact_address_html', ''));
+$socials     = settings_social_links();
+$year        = (int)date('Y');
 ?>
 
 <footer id="footer" class="footer footer-hover-links-light mt-0">
@@ -47,8 +52,8 @@ $year     = (int)date('Y');
 		<div class="row">
 			<div class="col-lg-2 align-self-center text-center mb-5 mb-lg-0">
 				<a href="/" class="logo">
-					<?php if ($logo): ?>
-						<img src="<?= htmlspecialchars($logo) ?>" class="img-fluid mb-lg-5" width="92" height="35" alt="<?= htmlspecialchars($site) ?>">
+					<?php if ($footerLogo): ?>
+						<img src="<?= htmlspecialchars($footerLogo) ?>" class="img-fluid mb-lg-5" width="92" height="35" alt="<?= htmlspecialchars($site) ?>">
 					<?php else: ?>
 						<span class="d-inline-block text-color-light font-weight-bold mb-lg-5">
 							<?= htmlspecialchars($site) ?>
@@ -116,75 +121,72 @@ $year     = (int)date('Y');
 				</ul>
 			</div>
 
-				<?php
-				// Rychlé odkazy = root stránky bez children
-				$quickLinks = [];
-				foreach ($menu as $item) {
-					if (empty($item['children'])) {
-						$slug = trim($item['slug'], '/');
-						$url = ($homeSlug && $slug === $homeSlug) ? '/' : '/' . $slug;
+			<?php
+			// Rychlé odkazy = root stránky bez children
+			$quickLinks = [];
+			foreach ($menu as $item) {
+				if (empty($item['children'])) {
+					$slug = trim($item['slug'], '/');
+					$url = ($homeSlug && $slug === $homeSlug) ? '/' : '/' . $slug;
 
-						$quickLinks[] = [
-							'title' => $item['title'],
-							'url'   => $url,
-						];
-					}
+					$quickLinks[] = [
+						'title' => $item['title'],
+						'url'   => $url,
+					];
 				}
-				?>
+			}
+			?>
 
-				<div class="col-lg-3 text-center text-lg-start mb-5 mb-lg-0">
-					<h4 class="font-weight-bold text-4-5 pb-1 mb-3">Rychlé odkazy</h4>
-					<ul class="list list-unstyled mb-0">
-						<?php foreach ($quickLinks as $link): ?>
-							<li>
-								<a href="<?= htmlspecialchars($link['url']) ?>">
-									<?= htmlspecialchars($link['title']) ?>
-								</a>
-							</li>
-						<?php endforeach; ?>
+			<div class="col-lg-3 text-center text-lg-start mb-5 mb-lg-0">
+				<h4 class="font-weight-bold text-4-5 pb-1 mb-3">Rychlé odkazy</h4>
+				<ul class="list list-unstyled mb-0">
+					<?php foreach ($quickLinks as $link): ?>
+						<li>
+							<a href="<?= htmlspecialchars($link['url']) ?>">
+								<?= htmlspecialchars($link['title']) ?>
+							</a>
+						</li>
+					<?php endforeach; ?>
+				</ul>
+			</div>
+
+			<div class="col-lg-3 text-center text-lg-start">
+				<h4 class="font-weight-bold text-4-5 pb-1 mb-3">Aktuální články</h4>
+				<div class="recent-posts">
+					<ul class="list list-unstyled d-flex flex-column align-items-center align-items-lg-start">
+						<?php if ($recentPosts): ?>
+							<?php foreach ($recentPosts as $post): ?>
+								<?php
+								$slug = trim($post['slug'], '/');
+								$url = ($articlesBaseSlug)
+									? '/' . $articlesBaseSlug . '/' . $slug
+									: '/' . $slug;
+
+								$date = $post['publish_date']
+									? date('j. n. Y', strtotime($post['publish_date']))
+									: '';
+								?>
+								<li>
+									<a href="<?= htmlspecialchars($url) ?>">
+										<?= htmlspecialchars($post['title']) ?>
+									</a>
+									<?php if ($date): ?>
+										<span class="text-muted small d-block"><?= $date ?></span>
+									<?php endif; ?>
+								</li>
+							<?php endforeach; ?>
+						<?php else: ?>
+							<li class="text-muted small">Žádné články</li>
+						<?php endif; ?>
 					</ul>
 				</div>
-
-			
-
-
-				<div class="col-lg-3 text-center text-lg-start">
-					<h4 class="font-weight-bold text-4-5 pb-1 mb-3">Aktuální články</h4>
-					<div class="recent-posts">
-						<ul class="list list-unstyled d-flex flex-column align-items-center align-items-lg-start">
-							<?php if ($recentPosts): ?>
-								<?php foreach ($recentPosts as $post): ?>
-									<?php
-									$slug = trim($post['slug'], '/');
-									$url = ($articlesBaseSlug)
-										? '/' . $articlesBaseSlug . '/' . $slug
-										: '/' . $slug;
-
-									$date = $post['publish_date']
-										? date('j. n. Y', strtotime($post['publish_date']))
-										: '';
-									?>
-									<li>
-										<a href="<?= htmlspecialchars($url) ?>">
-											<?= htmlspecialchars($post['title']) ?>
-										</a>
-										<?php if ($date): ?>
-											<span class="text-muted small d-block"><?= $date ?></span>
-										<?php endif; ?>
-									</li>
-								<?php endforeach; ?>
-							<?php else: ?>
-								<li class="text-muted small">Žádné články</li>
-							<?php endif; ?>
-						</ul>
-					</div>
-				</div>
+			</div>
 
 		</div>
 
 	</div>
 
-	<div class="footer-copyrig ht footer-copyright-container-border-top footer-copyright-container-border-top-opacity">
+	<div class="footer-copyright footer-copyright-container-border-top footer-copyright-container-border-top-opacity">
 		<div class="container">
 			<div class="row text-center">
 				<div class="col">

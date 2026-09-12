@@ -152,12 +152,12 @@ ob_start();
                     <div class="btn-group btn-group-sm" role="group" aria-label="Zobrazení">
                         <a class="btn btn-outline-secondary<?= $view === 'grid' ? ' active' : '' ?>"
                            href="<?= e(build_view_url($base, 'grid')) ?>">
-                            <i class="fas fa-th-large me-1"></i> Grid
+                            <i class="fas fa-th-large me-1"></i> Karty
                         </a>
 
                         <a class="btn btn-outline-secondary<?= $view === 'list' ? ' active' : '' ?>"
                            href="<?= e(build_view_url($base, 'list')) ?>">
-                            <i class="fas fa-bars me-1"></i> List
+                            <i class="fas fa-bars me-1"></i> Seznam
                         </a>
                     </div>
                 </div>
@@ -181,7 +181,7 @@ ob_start();
                                     ?>
 
                                     <div class="col-md-6 col-lg-4">
-                                        <article class="card h-100 border-0 shadow-sm bg-white">
+                                        <article class="card h-100 border-0 shadow-sm bg-light-5">
 
                                             <?php if ($thumb): ?>
                                                 <a href="<?= e($url) ?>">
