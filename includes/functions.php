@@ -923,6 +923,53 @@ function renderPageBlocks(mysqli $conn, $page): void
         }
 
         /*
+         * Globální odsazení bloku.
+         *
+         * NULL / prázdná hodnota = zachovat výchozí odsazení šablony.
+         * 0, 2, 3, 4, 5 = Bootstrap pt-* / pb-*.
+         */
+        $sectionClasses = [];
+
+        $originalSectionClass = trim(
+            (string)($block['section_class'] ?? '')
+        );
+
+        if ($originalSectionClass !== '') {
+            $sectionClasses[] = $originalSectionClass;
+        }
+
+        $allowedPaddings = [0, 2, 3, 4, 5];
+
+        if (
+            array_key_exists('padding_top', $block)
+            && $block['padding_top'] !== null
+            && $block['padding_top'] !== ''
+        ) {
+            $paddingTop = (int)$block['padding_top'];
+
+            if (in_array($paddingTop, $allowedPaddings, true)) {
+                $sectionClasses[] = 'pt-' . $paddingTop;
+            }
+        }
+
+        if (
+            array_key_exists('padding_bottom', $block)
+            && $block['padding_bottom'] !== null
+            && $block['padding_bottom'] !== ''
+        ) {
+            $paddingBottom = (int)$block['padding_bottom'];
+
+            if (in_array($paddingBottom, $allowedPaddings, true)) {
+                $sectionClasses[] = 'pb-' . $paddingBottom;
+            }
+        }
+
+        $block['section_class'] = implode(
+            ' ',
+            array_unique($sectionClasses)
+        );
+
+        /*
          * Existující specializovaný blok.
          */
         $file = __DIR__
@@ -936,20 +983,21 @@ function renderPageBlocks(mysqli $conn, $page): void
         }
 
         /*
-         * Nový jednoduchý blok z registru.
+         * Jednoduchý blok.
          */
+<<<<<<< HEAD
         if (in_array(
             $type,
             ['alert', 'button', 'youtube', 'map'],
             true
         )) {
+=======
+        $simpleFile = __DIR__
+            . '/../templates/blocks/simple.php';
+>>>>>>> 3962cf5 (různé úpravy)
 
-            $simpleFile = __DIR__
-                . '/../templates/blocks/simple.php';
-
-            if (is_file($simpleFile)) {
-                include $simpleFile;
-            }
+        if (is_file($simpleFile)) {
+            include $simpleFile;
         }
     }
 }function handleRedirects(mysqli $conn): void
@@ -1133,6 +1181,53 @@ function renderArticleBlocks(mysqli $conn, array $article): void
         }
 
         /*
+         * Globální odsazení bloku.
+         *
+         * NULL / prázdná hodnota = zachovat výchozí odsazení šablony.
+         * 0, 2, 3, 4, 5 = Bootstrap pt-* / pb-*.
+         */
+        $sectionClasses = [];
+
+        $originalSectionClass = trim(
+            (string)($block['section_class'] ?? '')
+        );
+
+        if ($originalSectionClass !== '') {
+            $sectionClasses[] = $originalSectionClass;
+        }
+
+        $allowedPaddings = [0, 2, 3, 4, 5];
+
+        if (
+            array_key_exists('padding_top', $block)
+            && $block['padding_top'] !== null
+            && $block['padding_top'] !== ''
+        ) {
+            $paddingTop = (int)$block['padding_top'];
+
+            if (in_array($paddingTop, $allowedPaddings, true)) {
+                $sectionClasses[] = 'pt-' . $paddingTop;
+            }
+        }
+
+        if (
+            array_key_exists('padding_bottom', $block)
+            && $block['padding_bottom'] !== null
+            && $block['padding_bottom'] !== ''
+        ) {
+            $paddingBottom = (int)$block['padding_bottom'];
+
+            if (in_array($paddingBottom, $allowedPaddings, true)) {
+                $sectionClasses[] = 'pb-' . $paddingBottom;
+            }
+        }
+
+        $block['section_class'] = implode(
+            ' ',
+            array_unique($sectionClasses)
+        );
+
+        /*
          * Existující specializovaný blok.
          */
         $file = __DIR__
@@ -1146,20 +1241,21 @@ function renderArticleBlocks(mysqli $conn, array $article): void
         }
 
         /*
-         * Nový jednoduchý blok z registru.
+         * Jednoduchý blok.
          */
+<<<<<<< HEAD
         if (in_array(
             $type,
             ['alert', 'button', 'youtube', 'map'],
             true
         )) {
+=======
+        $simpleFile = __DIR__
+            . '/../templates/blocks/simple.php';
+>>>>>>> 3962cf5 (různé úpravy)
 
-            $simpleFile = __DIR__
-                . '/../templates/blocks/simple.php';
-
-            if (is_file($simpleFile)) {
-                include $simpleFile;
-            }
+        if (is_file($simpleFile)) {
+            include $simpleFile;
         }
     }
 }
