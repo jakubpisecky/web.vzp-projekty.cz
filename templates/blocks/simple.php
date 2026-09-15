@@ -250,26 +250,40 @@ if ($type === 'boxes') {
      * U světlého boxu používáme tmavý text a primární tlačítko.
      * U barevných boxů bílý text a světlé tlačítko,
      * aby byl vždy zachovaný dostatečný kontrast.
-     */
-    $colorMap = [
+     */$colorMap = [
         'light' => [
-            'box' => 'bg-light text-dark',
+            'box' => 'bg-white text-dark',
+            'title' => 'text-dark',
+            'button' => 'btn-primary',
+        ],
+        'light-5' => [
+            'box' => 'bg-light-5 text-dark',
+            'title' => 'text-dark',
             'button' => 'btn-primary',
         ],
         'primary' => [
             'box' => 'bg-primary text-white',
+            'title' => 'text-white',
             'button' => 'btn-light',
         ],
         'secondary' => [
             'box' => 'bg-secondary text-white',
+            'title' => 'text-white',
             'button' => 'btn-light',
         ],
         'blue' => [
             'box' => 'bg-info text-white',
+            'title' => 'text-white',
             'button' => 'btn-light',
         ],
         'green' => [
             'box' => 'bg-success text-white',
+            'title' => 'text-white',
+            'button' => 'btn-light',
+        ],
+        'dark' => [
+            'box' => 'bg-dark text-white',
+            'title' => 'text-white',
             'button' => 'btn-light',
         ],
     ];
@@ -336,8 +350,11 @@ if ($type === 'boxes') {
                         $boxClass =
                             $colorMap[$color]['box'];
 
-                        $buttonClass =
-                            $colorMap[$color]['button'];
+                            $titleClass =
+                                $colorMap[$color]['title'];
+
+                            $buttonClass =
+                                $colorMap[$color]['button'];
                         ?>
 
                         <div class="<?= e($columnClass) ?> d-flex">
@@ -348,7 +365,7 @@ if ($type === 'boxes') {
 
                                 <div class="card-body p-4 p-lg-5">
 
-                                    <h3 class="card-title mb-3">
+                                    <h3 class="card-title mb-3 <?= e($titleClass) ?>">
                                         <?= e($itemTitle) ?>
                                     </h3>
 
